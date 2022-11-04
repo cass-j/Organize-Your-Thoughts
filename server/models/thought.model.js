@@ -7,10 +7,19 @@ const ThoughtSchema = new mongoose.Schema({
     userId: { type: String, 
         required: true
     },
-    comments: { type: [{}],
+    isMature: { type: Boolean, 
+        default: false,
+    },
+    isPrivate: { type: Boolean,
+        default: false
+    },
+    comments: { type: [{
+        userId: { type : String
+        },
+        comment: { type:String,
         minlength: [1, "Comments cannot be empty."],
         trim: true
-    },
+    }}, {timestamps:true}]},
 }, {timestamps: true})
 
 module.exports = mongoose.model('Thought', ThoughtSchema);

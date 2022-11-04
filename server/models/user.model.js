@@ -28,7 +28,9 @@ const UserSchema = new mongoose.Schema({
         minlength: [6, "Password must be at least 6 characters long."],
         validate: [validatePassword, "Password must contain at least one lowercase letter, one capital letter, one number, and a special character !#$%&'*+/=?^_`{|}~-"]
     },
-    thoughts: {type: [String]}
+    thoughts: { type: [{
+        thought_id: {type: String}
+    }]}
 }, {timestamps: true});
 
 module.exports = mongoose.model('User', UserSchema);

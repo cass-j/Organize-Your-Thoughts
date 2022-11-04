@@ -1,4 +1,5 @@
 const UserController = require('../controllers/user.controller')
+const ThoughtController = require('../controllers/thought.controller')
 
 module.exports = (app) => {
     
@@ -10,4 +11,14 @@ module.exports = (app) => {
     app.post('/api/users', UserController.createUser)
     app.put('/api/users/:id', UserController.updateUser)
     app.delete('/api/users/:id', UserController.deleteUser)
+    
+    // thoughts api routes
+    app.get('/api/thoughts', ThoughtController.findAllThoughts)
+    app.get('/api/thoughts/:id', ThoughtController.findAThought)
+    app.post('/api/thoughts', ThoughtController.createThought)
+    app.put('/api/thoughts/:id', ThoughtController.updateThought)
+    app.delete('/api/thoughts/:id', ThoughtController.forgetThought)
 }
+
+
+
