@@ -1,4 +1,6 @@
 const mongoose = require("mongoose")
+const Thought = require("./thought.model")
+
 
 const validateEmail = (email) => {
     const re = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/g;
@@ -11,11 +13,15 @@ const validatePassword = (password) => {
 }
 
 const UserSchema = new mongoose.Schema({
-    username: { type: String,
-        required: [true, "Username is required"], 
+    username: {
+        type: String,
+        required: [true, "Username is required"],
         minlength: [3, "Username must be at least 3 characters long."],
-        unique: [true, "Username already exists"]},
-    email: { type: String,
+        unique: ["Username already exists", true]
+    },
+
+    email: {
+        type: String,
         required: [true, "Email is required"],
         minlength: [5, "Email must be at least 5 characters long."],
         unique: [true, "Email already exists"],
@@ -23,14 +29,19 @@ const UserSchema = new mongoose.Schema({
         lowercase: true,
         validate: [validateEmail, "Please enter a valid email address"],
     },
-    password: { type: String,
-        required: [true, "Password is required"], 
+    password: {
+        type: String,
+        required: [true, "Password is required"],
         minlength: [6, "Password must be at least 6 characters long."],
-        validate: [validatePassword, "Password must contain at least one lowercase letter, one capital letter, one number, and a special character !#$%&'*+/=?^_`{|}~-"]
+        // validate: [validatePassword, "Password must contain: a lowercase, a capital letter, a number, a special character !#$%&'*+/=?^_`{|}~-"]
     },
-    thoughts: { type: [{
-        thought_id: {type: String}
-    }]}
-}, {timestamps: true});
+    token: {
+        type: String,
+    },
+    thoughts: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Thought"
+    }]
+}, { timestamps: true });
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.model('User', UserSchema, 'users');

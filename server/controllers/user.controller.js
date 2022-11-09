@@ -1,5 +1,14 @@
 const User = require("../models/user.model")
-const bcrypt = require("mongoose-bcrypt");
+// Load input validation
+const validateRegisterInput = require("../utils/register.utils");
+const validateLoginInput = require("../utils/login.utils");
+const bcrypt = require("bcryptjs");
+const jwt = require('jsonwebtoken')
+const secret = "he bites my feet, I feel the passion"
+
+const generateToken = (id) => {
+    return jwt.sign({id}, secret, {expiresIn: "30d",})
+}
 
 module.exports.index = (req, res) => {
     res.json({
@@ -35,16 +44,67 @@ module.exports.findAUser = (req, res) => {
     .catch(err => res.json(err))
 }
 
-module.exports.createUser = (req, res) => {
-    User.create(req.body)
-        .then(user => res.json(user))
+module.exports.findMe = (req, res) => {
+    User.findOne({_id:req.params.id})
+    .then(user => res.json(user))
+    .catch(err => res.json(err))
+}
+
+module.exports.createUser = async (req, res) => {
+    console.log(req);
+    const { err, isValid } = validateRegisterInput(req.body)
+    const {username, email, password} = req.body;
+    if (!isValid) {
+        return res.status(400).json({errors:{message:err}})
+    }
+
+    bcrypt.hash(password, 8, function(err, hash) {
+        const data = {username, email, password:hash}
+        User.create(data)
+        .then(user => res.json({
+            _id:user._id, 
+            username:user.username, 
+            email:user.email, 
+            token: generateToken(user._id)
+        }))
         .catch(err => res.status(400).json(err))
+    });
+}
+
+module.exports.loginUser = async (req, res) => {
+    const { username, password } = req.body;
+    await User.findOne({username: username})
+    .then(user => {
+        bcrypt.compare(password, user.password)
+        .then(pass => {
+            if (!pass) {
+                res.status(400).json("Invalid username / password")
+            } else {
+                res.json({
+                    _id:user._id, 
+                    username:user.username, 
+                    email:user.email, 
+                    token: generateToken(user._id)
+                })
+            }
+        });
+    })
+    .catch(err => res.status(400).json(err))
 }
 
 module.exports.updateUser = (req, res) => {
-    User.findOneAndUpdate({_id:req.params.id}, req.body, {new:true, runValidators:true})
-        .then(updatedUser => res.json(updatedUser))
-        .catch(err => res.status(400).json(err))
+    const { err, isValid } = validateRegisterInput(req.body)
+    if (!isValid) {
+        return res.status(400).json(err)
+    }
+    const {_id, username, email, password} = req.body;
+
+    bcrypt.hash(password, 8, function(err, hash) {
+        const user = {_id, username, email, password:hash}
+        User.findOneAndUpdate({_id:req.params.id}, user, {new:true, runValidators:true})
+            .then(updatedUser => res.json(updatedUser))
+            .catch(err => res.status(400).json(err))
+    });
 }
 
 module.exports.deleteUser = (req, res) => {

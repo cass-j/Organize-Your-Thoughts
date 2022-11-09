@@ -1,10 +1,18 @@
 const mongoose = require("mongoose")
 
 const ThoughtSchema = new mongoose.Schema({
+    title: { type: String,
+        required: [true, "Title cannot be empty"], 
+        trim: true,
+    },
     thought: { type: String,
         required: [true, "Thought cannot be empty"], 
-        minlength: [1, "Thoughts cannot be empty."]},
+        trim: true,
+    },
     userId: { type: String, 
+        required: true
+    },
+    userName: { type: String, 
         required: true
     },
     isMature: { type: Boolean, 
@@ -17,7 +25,7 @@ const ThoughtSchema = new mongoose.Schema({
         userId: { type : String
         },
         comment: { type:String,
-        minlength: [1, "Comments cannot be empty."],
+        minlength: [1, "Comment cannot be blank."],
         trim: true
     }}, {timestamps:true}]},
 }, {timestamps: true})
