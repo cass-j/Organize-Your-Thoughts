@@ -26,8 +26,8 @@ module.exports.createThought = (req, res) => {
 }
 
 module.exports.updateThought = (req, res) => {
-   const { id } = req.body
-   Thought.findOneAndUpdate({ _id: id }, req.body, { new: true, runValidators: true })
+   const { _id } = req.body
+   Thought.findOneAndUpdate({ _id: _id }, req.body, { new: true, runValidators: true })
       .then(updatedThought => res.json(updatedThought))
       .catch(err => res.status(400).json(err))
 }

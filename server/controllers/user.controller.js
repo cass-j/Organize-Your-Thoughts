@@ -1,7 +1,6 @@
 const User = require("../models/user.model")
 // Load input validation
 const validateRegisterInput = require("../utils/register.utils");
-const validateLoginInput = require("../utils/login.utils");
 const bcrypt = require("bcryptjs");
 const jwt = require('jsonwebtoken')
 const secret = "he bites my feet, I feel the passion"
@@ -39,12 +38,6 @@ module.exports.findAllUsers = (req, res) => {
 }
 
 module.exports.findAUser = (req, res) => {
-   User.findOne({ _id: req.params.id })
-      .then(user => res.json(user))
-      .catch(err => res.json(err))
-}
-
-module.exports.findMe = (req, res) => {
    User.findOne({ _id: req.params.id })
       .then(user => res.json(user))
       .catch(err => res.json(err))
